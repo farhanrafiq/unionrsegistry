@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DealerStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CustomerType {
+  PRIVATE
+  GOVERNMENT
+}
+
+model Dealer {
+  id                  String       @id @default(uuid())
+  username            String       @unique
+  email               String       @unique
+  passwordHash        String
+  companyName         String
+  primaryContactName  String
+  primaryContactPhone String
+  address             String
+  status              DealerStatus @default(ACTIVE)
+  suspensionReason    String?
+  deletionReason      String?
+  deletionDate        DateTime?
+  forcePasswordChange Boolean      @default(false)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  customers           Customer[]
+  employees           Employee[]
+}
+
+model Customer {
+  id              String        @id @default(uuid())
+  dealerId        String
+  type            CustomerType
+  nameOrEntity    String
+  contactPerson   String?
+  phone           String
+  email           String
+  officialId      String
+  address         String
+  status          CustomerStatus @default(ACTIVE)
+  terminationDate DateTime?
+  terminationReason String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  dealer Dealer @relation(fields: [dealerId], references: [id])
+
+  @@unique([dealerId, officialId])
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  TERMINATED
+}
+
+model Employee {
+  id               String         @id @default(uuid())
+  dealerId         String
+  firstName        String
+  lastName         String
+  phone            String
+  email            String
+  aadhar           String         @unique
+  position         String
+  hireDate         DateTime
+  status           EmployeeStatus @default(ACTIVE)
+  terminationDate  DateTime?
+  terminationReason String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  dealer Dealer @relation(fields: [dealerId], references: [id])
+}

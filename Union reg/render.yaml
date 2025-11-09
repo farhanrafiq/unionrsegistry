@@ -1,0 +1,12 @@
+services:
+  - type: static_site
+    name: union-registry-static
+    buildCommand: npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
