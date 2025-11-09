@@ -2,7 +2,34 @@
 
 This guide walks you through deploying the Union Registry app with a Neon PostgreSQL database and Render hosting.
 
-## Prerequisites
+## 🚀 Quick Start (Recommended)
+
+### Option A: One-Click Blueprint Deployment
+
+1. **Create Neon Database**
+   - Go to [console.neon.tech](https://console.neon.tech) and create a new project
+   - Copy the connection string (format: `postgres://user:password@host/dbname?sslmode=require`)
+
+2. **Deploy with Render Blueprint**
+   - Click: [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+   - Or manually: Go to [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**
+   - Connect your GitHub repository: `farhanrafiq/unionrsegistry`
+   - Render will auto-detect `render.yaml` and create both services
+
+3. **Configure Environment Variables**
+   - In the Blueprint setup, set:
+     - `DATABASE_URL`: Your Neon connection string
+     - `JWT_SECRET`: Will be auto-generated (or provide your own)
+   - Click **Apply**
+
+4. **Done!** 🎉
+   - Backend API will be available at: `https://union-registry-api.onrender.com`
+   - Frontend will be available at: `https://union-registry-frontend.onrender.com`
+   - First deploy takes ~5-10 minutes
+
+---
+
+## 📋 Prerequisites (Manual Setup)
 
 - GitHub account with the repository pushed
 - Neon account (free tier available at [neon.tech](https://neon.tech))
@@ -179,12 +206,54 @@ Want to use Neon for local dev too?
 
 ---
 
+## 🔄 Using the Blueprint (render.yaml)
+
+This project includes a `render.yaml` file for Infrastructure as Code deployment. Benefits:
+
+- **Version Control**: Your infrastructure is tracked in git
+- **Reproducible**: Rebuild entire stack with one click
+- **Auto-Updates**: Changes to `render.yaml` auto-deploy when pushed
+- **Multi-Service**: Deploys both backend API and frontend in one go
+
+### Blueprint Structure
+
+```yaml
+services:
+  - type: web                          # Backend API
+    name: union-registry-api
+    runtime: node
+    buildCommand: ./render-build.sh    # Installs deps, generates Prisma, builds
+    startCommand: ./render-start.sh    # Runs migrations, starts server
+    
+  - type: web                          # Frontend Static Site
+    name: union-registry-frontend
+    runtime: static
+    envVars:
+      - key: VITE_API_URL              # Auto-links to backend URL
+        fromService:
+          name: union-registry-api
+```
+
+### Updating Your Deployment
+
+1. Make changes to code or `render.yaml`
+2. Commit and push to GitHub:
+   ```bash
+   git add .
+   git commit -m "Update deployment config"
+   git push origin main
+   ```
+3. Render auto-deploys within seconds! ⚡
+
+---
+
 ## Next Steps
 
-- **Custom domain**: Add your domain in Render Static Site settings
+- **Custom domain**: Add your domain in Render service settings
 - **Auto-deploy**: Render automatically deploys on `git push` to main
 - **Monitoring**: Check Render logs and Neon console for metrics
 - **Scaling**: Upgrade Render plan for always-on, faster instances
+- **Seeding**: Set `SEED_DATABASE=true` env var to auto-seed on startup
 
 ---
 
@@ -198,8 +267,28 @@ Want to use Neon for local dev too?
 
 ---
 
+## Troubleshooting Common Issues
+
+### Backend fails to start
+- **Check DATABASE_URL**: Ensure it's set correctly in Render dashboard
+- **Check logs**: Click on the service → "Logs" tab for detailed errors
+- **Migration issues**: Run `npm run migrate` manually in Render Shell
+
+### Frontend can't connect to API
+- **CORS errors**: Check `ALLOWED_ORIGINS` env var in backend
+- **Wrong API URL**: Verify `VITE_API_URL` matches your backend service URL
+- **HTTPS required**: Ensure using `https://` not `http://` for production
+
+### Database connection errors
+- **Too many connections**: Free tier has 10 connection limit - restart service
+- **SSL required**: Ensure connection string has `?sslmode=require`
+- **IP restrictions**: Neon free tier doesn't restrict IPs by default
+
+---
+
 ## Support
 
 - Neon Docs: https://neon.tech/docs
 - Render Docs: https://render.com/docs
-- Issues: https://github.com/farhanrafiq/union/issues
+- Render Blueprint Docs: https://render.com/docs/infrastructure-as-code
+- Issues: https://github.com/farhanrafiq/unionrsegistry/issues

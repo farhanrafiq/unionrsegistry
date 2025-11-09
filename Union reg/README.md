@@ -20,9 +20,22 @@ View your app in AI Studio: https://ai.studio/apps/drive/11fGBCY5TvCYgSimd4g6-LN
 
 ## Deploy to Render
 
-This project is configured to deploy automatically to Render as a static site.
+This project is fully configured for Render deployment with both frontend and backend services.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/farhanrafiq/union)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/farhanrafiq/unionrsegistry)
+
+### 🚀 One-Click Deployment (Recommended)
+
+This project uses Render Blueprint (`render.yaml`) to deploy everything automatically:
+
+1. **Create a Neon PostgreSQL database** (free): [console.neon.tech](https://console.neon.tech)
+2. **Click the "Deploy to Render" button** above or use Blueprint in Render dashboard
+3. **Set environment variables**:
+   - `DATABASE_URL`: Your Neon connection string
+   - `JWT_SECRET`: Auto-generated or provide your own
+4. **Deploy!** Both frontend and backend will be live in ~5-10 minutes
+
+📖 **[Full Deployment Guide →](./DEPLOYMENT.md)**
 
 ### Option 1: Automatic Deployment (Recommended)
 1. Connect your GitHub repository to Render at https://dashboard.render.com/new/static-site or click the "Deploy to Render" button above

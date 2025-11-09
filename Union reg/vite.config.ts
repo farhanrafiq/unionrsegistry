@@ -10,14 +10,15 @@ export default defineConfig(({ mode }) => {
         host: true,
         allowedHosts: [
           process.env.RENDER_EXTERNAL_HOSTNAME,
-          'union-1.onrender.com',
+          'union-registry-frontend.onrender.com',
         ].filter(Boolean) as string[],
       },
       preview: {
+        port: parseInt(process.env.PORT || '3000'),
         host: true,
         allowedHosts: [
           process.env.RENDER_EXTERNAL_HOSTNAME,
-          'union-1.onrender.com',
+          'union-registry-frontend.onrender.com',
         ].filter(Boolean) as string[],
       },
       plugins: [react()],
@@ -28,6 +29,17 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+        }
+      },
+      build: {
+        outDir: 'dist',
+        sourcemap: false,
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'react-vendor': ['react', 'react-dom']
+            }
+          }
         }
       }
     };

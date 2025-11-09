@@ -1,10 +1,44 @@
 services:
-  - type: static_site
-    name: union-registry-static
-    buildCommand: npm run build
-    staticPublishPath: dist
+  # Backend API Service
+  - type: web
+    name: union-registry-api
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: server
+    buildCommand: ./render-build.sh
+    startCommand: ./render-start.sh
     envVars:
-      - key: GEMINI_API_KEY
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    healthCheckPath: /health
+
+  # Frontend Static Site
+  - type: web
+    name: union-registry-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    envVars:
+      - key: VITE_API_URL
         sync: false
     routes:
       - type: rewrite
