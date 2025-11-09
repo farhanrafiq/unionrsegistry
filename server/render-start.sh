@@ -7,7 +7,7 @@ echo "🚀 Starting application..."
 
 # Run database migrations
 echo "📊 Running database migrations..."
-npm run migrate
+npx prisma migrate deploy
 
 # Seed database if SEED_DATABASE is set
 if [ "$SEED_DATABASE" = "true" ]; then

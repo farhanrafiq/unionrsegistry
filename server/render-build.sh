@@ -11,7 +11,7 @@ npm ci
 
 # Generate Prisma client
 echo "🔧 Generating Prisma client..."
-npm run generate
+npx prisma generate
 
 # Build TypeScript
 echo "🏗️  Building TypeScript..."
